@@ -1,9 +1,12 @@
 from django.shortcuts import render, get_object_or_404
 from django.shortcuts import render
 from django.utils import timezone
+from django.views.generic.edit import DeleteView
+from django.urls import reverse_lazy
 from .models import Post
 from .forms import PostForm
 from django.shortcuts import redirect
+
 
 
 def post_list(request):
@@ -40,5 +43,15 @@ def post_edit(request, pk):
             return redirect('post_detail', pk=post.pk)
     else:
         form = PostForm(instance=post)
-    return render(request, 'blog/post_edit.html', {'form': form})
+    return render(request, 'blog/post_edit.html', {'form': form, 'post':post})
+
+def post_del(request, pk):
+    post = get_object_or_404(Post, pk=pk)
+    if request.method == "POST":
+        Post.objects.get(pk=pk).delete()
+        return redirect('post_list')
+    else:
+        form = PostForm(instance=post)
+    return render(request, 'blog/delete_note.html', {'form': form})
+
 
